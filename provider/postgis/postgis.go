@@ -643,23 +643,11 @@ func (p Provider) MVTForLayers(ctx context.Context, tile provider.Tile, layers [
 			return nil, err
 		}
 
-		// ref: https://postgis.net/docs/ST_AsMVT.html
-		// bytea ST_AsMVT(anyelement row, text name, integer extent, text geom_name, text feature_id_name)
-
-		var featureIDName string
-
-		if l.IDFieldName() == "" {
-			featureIDName = "NULL"
-		} else {
-			featureIDName = fmt.Sprintf(`'%s'`, l.IDFieldName())
-		}
-
 		sqls = append(sqls, fmt.Sprintf(
-			`(SELECT ST_AsMVT(q,'%s',%d,'%s',%s) AS data FROM (%s) AS q)`,
+			`(SELECT ST_AsMVT(q,'%s',%d,'%s') AS data FROM (%s) AS q)`,
 			layers[i].MVTName,
 			tegola.DefaultExtent,
 			l.GeomFieldName(),
-			featureIDName,
 			sql,
 		))
 	}
